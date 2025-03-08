@@ -15,6 +15,7 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
     "axios": "^1.8.1",
+    "js-cookie": "^3.0.5",
     "next": "15.2.1",
     "nookies": "^2.5.2",
     "react": "^19.0.0",

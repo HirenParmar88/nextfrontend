@@ -1,22 +1,31 @@
 //src/components/login/Login.jsx
 
 "use client";
-import React, { useEffect, useState } from "react";
-import { parseCookies } from "nookies";
+import React, { useState } from "react";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { Button, Snackbar } from "@mui/material";
 import { Home } from "@mui/icons-material";
+import { useTheme } from "@mui/material";
+import { useRouter } from "next/navigation";
 import theme from "../theme/theme";
+import Cookies from "js-cookie";
+import { useUser } from "@/context/UserContext";
 
 function LoginComponent() {
-  const cookies = parseCookies();
-  console.log("custom theme:",theme);
-  console.log(theme.colors.primary);
-  
+  const router = useRouter();
+  const theme = useTheme();
+  console.log("custom theme:", theme.palette.primary.main);
+
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const { setUser } = useUser();
+  const handleSnackbarClose = () => {
+    setSnackbar({ open: false, message: "" });
+  };
+
   // Handle form submit
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,60 +38,90 @@ function LoginComponent() {
         password,
       });
       console.log("Login res ", response.data);
-      
-      if (response.data.token) {
-        // Save token to cookies or localStorage
-        document.cookie = `token=${response.data.token}; path=/`;
-        console.log("Login successful, token saved.");
-      }
+      console.log("token", response.data.token);
+      const username = response.data.data.name;
+      console.log(username);
 
-      setLoading(false);
+      if (response.data.success) {
+        console.log("Login successful.");
+        //localStorage.setItem("user", JSON.stringify(response.data.data));
+        setUser(response.data.data);  
+        Cookies.set("token", response.data.token, { expires: 7, secure: true });
+        setSnackbar({
+          open: true,
+          message: response.data.message,
+        });
+        setTimeout(() => {
+          
+          router.push("home");
+        }, 1000);
+      } else {
+        console.error(response.data.message || "Invalid username or password.");
+        setSnackbar({ open: true, message: response.data.message });
+      }
     } catch (err) {
       setLoading(false);
-      console.error(err);
-      setError("Invalid username or password.");
+      console.error(err.response.data);
+      console.error(err.response.data.message);
+      setSnackbar({ open: true, message: err.response.data.message });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-    <div style={styles.container}>
-      <h2 style={styles.header}>Login Page</h2>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <div style={styles.inputGroup}>
-          <label htmlFor="username" style={styles.label}>
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
-        <div style={styles.inputGroup}>
-          <label htmlFor="password" style={styles.label}>
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
-        {error && <p style={styles.error}>{error}</p>}
-        <button type="submit" style={styles.button} disabled={loading}>
-          {loading ? "Logging In..." : "Login"}
-        </button>
-      </form>
-    </div>
-    <Button variant="contained">Hello world</Button>
-    <Home sx={{fontSize:40}}/>
+      <div style={styles.container}>
+        <h2 style={styles.header}>Login Page</h2>
+        <form onSubmit={handleLogin} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label htmlFor="username" style={styles.label}>
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter Username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={styles.input}
+              //required
+            />
+          </div>
+          <div style={styles.inputGroup}>
+            <label htmlFor="password" style={styles.label}>
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+              //required
+            />
+          </div>
+          {error && <p style={styles.error}>{error}</p>}
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Logging In..." : "Login"}
+          </button>
+        </form>
+      </div>
+
+      {/* MUI Snackbar for Notifications */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        message={snackbar.message}
+      />
+
+      <div>
+        <Button variant="contained">Hello world</Button>
+        <Home sx={{ fontSize: 40 }} />
+      </div>
     </>
   );
 }
@@ -94,7 +133,7 @@ const styles = {
     alignItems: "center",
     flexDirection: "column",
     height: "100vh",
-    backgroundColor: "lightblue",
+    backgroundColor: theme.palette.background.default,
   },
   header: {
     fontSize: "2rem",
@@ -131,12 +170,11 @@ const styles = {
     width: "100%",
     padding: "10px",
     fontSize: "1rem",
-    backgroundColor: theme.colors.primary,
+    backgroundColor: "rgb(80, 189, 160)",
     color: "white",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-    
   },
 };
 
