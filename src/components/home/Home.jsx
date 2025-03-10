@@ -3,18 +3,21 @@
 "use client";
 import { useUser } from "@/context/UserContext";
 import React from "react";
-import LogoutComponent from "../logout/Logout.jsx";
-
-function HomeScreen() {
+// import LogoutComponent from "../logout/Logout.jsx";
+import NavigationBar from "../navbar/Navbar.jsx";
+import AddUserComponent from "../user/AddUser.jsx"
+function HomeScreen(props) {
   const { user } = useUser();
   console.log("get user data home :",{user})
   if(!user) return
   return (
     <>
       <div>
-        <h1>{user?.role} | Welcome to Home </h1>
-        <LogoutComponent />
+      <NavigationBar user={user}/>
+      
+      {/* <LogoutComponent /> */}
       </div>
+      {/* <AddUserComponent /> */}
     </>
   );
 }

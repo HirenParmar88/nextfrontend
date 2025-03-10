@@ -2,6 +2,7 @@
 "use client";
 import { useTheme, Button } from "@mui/material";
 import useLogout from "./logout.js";
+import { ToastContainer } from "react-toastify";
 
 function LogoutComponent() {
   const theme = useTheme();
@@ -28,6 +29,7 @@ function LogoutComponent() {
       >
         Logout
       </Button>
+      <ToastContainer />
     </>
   );
 }
