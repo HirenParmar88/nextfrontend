@@ -7,7 +7,8 @@ import Cookies from "js-cookie";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const cookieUser = Cookies.get('user');
+  const [user, setUser] = useState(cookieUser ? JSON.parse(cookieUser) : null);
   console.log({ user });
   
   // Function to log out user

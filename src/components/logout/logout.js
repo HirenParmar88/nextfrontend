@@ -42,5 +42,4 @@ const useLogout = () => {
 
   return handleLogout;
 };
-
 export default useLogout;

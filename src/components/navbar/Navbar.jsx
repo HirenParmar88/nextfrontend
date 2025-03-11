@@ -15,10 +15,12 @@ import { ExitToApp } from "@mui/icons-material";
 import useLogout from "../logout/logout.js";
 import { useUser } from "@/context/UserContext";
 import  AddUserComponent  from "../user/AddUser.jsx";
-import AddProductComponent from "../product/AddProduct.jsx"
+import AddProductComponent from "../product/AddProduct.jsx";
 import ShowUserComponent from "../user/ShowUser.jsx";
 import ShowProductComponent from "../product/ShowProduct.jsx";
 import { ToastContainer } from "react-toastify";
+import AddAccessoriesComponent from "../accessories/AddAccessories.jsx";
+import ShowAccessoriesComponent from "../accessories/ShowAccessories.jsx"
 
 function NavigationBar() {
   const handleLogout = useLogout();
@@ -55,6 +57,15 @@ function NavigationBar() {
   const handleShowProduct = (action) => {
     console.log(action);
     setActiveView("showProduct")
+  }
+
+  const handleAddAccessories = (action) => {
+    console.log(action);
+    setActiveView("addAccessories")
+  }
+  const handleShowAccessories = (action) => {
+    console.log(action);
+    setActiveView("showAccessories")
   }
 
   const renderMenuItems = () => {
@@ -140,6 +151,9 @@ function NavigationBar() {
 
       {activeView === "addProduct" && <AddProductComponent />}
       {activeView === "showProduct" && <ShowProductComponent />}
+
+      {activeView === "addAccessories" && <AddAccessoriesComponent />}
+      {activeView === "showAccessories" && <ShowAccessoriesComponent />}
       <ToastContainer />
     </>
   );

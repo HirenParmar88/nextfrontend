@@ -1,4 +1,4 @@
-//src/components/product/ShowProduct.jsx
+//src/components/accessories/ShowAccessories.jsx
 
 import React, { useEffect, useState } from "react";
 import {
@@ -25,29 +25,27 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 
-function ShowProductComponent() {
-  const [product, setProduct] = useState([]);
+function ShowAccessoriesComponent() {
+  const [accessories, setAccessories] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
-  const [totalProduct, setTotalProduct] = useState(0);
+  const [totalAccessories, setTotalAccessories] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState({ id: "", product_name: "", price: "", description: "", userId: "" });
+  const [currentAccessories, setCurrentAccessories] = useState({ id: "", accessory_name: "", productId: "" });
 
   const columns = [
     { id: "id", label: "ID", minWidth: 100 },
-    { id: "product_name", label: "Product Name", minWidth: 170 },
-    { id: "price", label: "Price", minWidth: 170 },
-    { id: "description", label: "Description", minWidth: 100 },
-    { id: "userId", label: "UserId", minWidth: 100 },
+    { id: "accessory_name", label: "Accessory Name", minWidth: 170 },
+    { id: "productId", label: "ProductId", minWidth: 100 },
   ];
   // Fetch products data from API
   useEffect(() => {
-    getProductLists();
+    getAccessoriesLists();
   }, []);
 
-  const getProductLists = async () => {
+  const getAccessoriesLists = async () => {
     try {
-      console.log("get product API call");
+      console.log("get accessories API call");
       const token = Cookies.get("token"); // Retrieve token from cookies
       if (!token) {
         console.error("No token found");
@@ -56,7 +54,7 @@ function ShowProductComponent() {
       //setPage(page+1)
       const response = await axios({
         method: "get",
-        url: `http://localhost:3000/product/?page=${
+        url: `http://localhost:3000/accessories/?page=${
           page + 1
         }&rowsPerPage=${rowsPerPage}`,
         headers: {
@@ -64,7 +62,7 @@ function ShowProductComponent() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("GET Product API Response :-", response.data);
+      console.log("GET Accessories API Response :-", response.data);
       console.log("count", response.data.count);
       setPage(response.data.page); //1
       setRowsPerPage(response.data.rawsPerPage); //10
@@ -73,8 +71,8 @@ function ShowProductComponent() {
 
       if (response.data.code === 200) {
         toast.success(response.data.message);
-        setProduct(response.data.data);
-        setTotalProduct(response.data.count);
+        setAccessories(response.data.data);
+        setTotalAccessories(response.data.count);
       } else {
         toast.error(response.data.message);
       }
@@ -96,11 +94,11 @@ function ShowProductComponent() {
   };
 
   const handleDelete = async(id) => {
-    console.log("Deleting product with ID:", id);
+    console.log("Deleting Accessories with ID:", id);
     try {
-      console.log("DELETE PRODUCT API CALLED..");
+      console.log("DELETE ACCESSORIES API CALLED..");
       const token = Cookies.get("token"); 
-      console.log("Delete Product token :",token);
+      console.log("Delete Accessories token :",token);
       
       if (!token) {
         console.error("No token found");
@@ -108,7 +106,7 @@ function ShowProductComponent() {
       }
       const deleteRes = await axios({
         method:"delete",
-        url:`http://localhost:3000/product/${id}`,
+        url:`http://localhost:3000/accessories/${id}`,
         headers:{
           "Content-Type":"application/json",
           "Authorization":`Bearer ${token}`
@@ -116,7 +114,7 @@ function ShowProductComponent() {
       })
       console.log(deleteRes.data);
       if(deleteRes.data.code === 200){
-        setProduct(prevProduct => prevProduct.filter(product => product.id!==id))
+        setAccessories(prevAccessories => prevAccessories.filter(accessories => accessories.id!==id))
         toast.success(deleteRes.data.message)
       }else{
         toast.warning(deleteRes.data.message)
@@ -127,16 +125,15 @@ function ShowProductComponent() {
     }
   };
 
-  const handleOpenDialog = (product) => {
-    setCurrentProduct({ id: product.id, product_name: product.product_name, description: product.description,price:product.price, userId: product.userId });
+  const handleOpenDialog = (accessories) => {
+    setCurrentAccessories({ id: accessories.id, accessory_name: accessories.accessory_name, productId: accessories.productId });
     setOpenDialog(true);
   };
 
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
-      console.log("UPDATE PRODUCT API CALL..");
-      
+      console.log("UPDATE ACCESSORIES API CALL..");
       const token = Cookies.get("token");
       if (!token) {
         console.error("No token found");
@@ -144,20 +141,18 @@ function ShowProductComponent() {
       }
       const response = await axios({
         method: "put",
-        url: `http://localhost:3000/product/${currentProduct.id}`,
+        url: `http://localhost:3000/accessories/${currentAccessories.id}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         data: {
-          product_name: currentProduct.product_name,
-          price: currentProduct.price,
-          description: currentProduct.description,
+          accessory_name: currentAccessories.accessory_name
         },
       });
       if (response.data.code === 200) {
         toast.success(response.data.message);
-        setProduct(prevProduct => prevProduct.map(product => product.id === currentProduct.id ? { ...product, ...currentProduct } : product));
+        setAccessories(prevAccessories => prevAccessories.map(accessories => accessories.id === currentAccessories.id ? { ...accessories, ...currentAccessories } : accessories));
         setOpenDialog(false); // Close the dialog
       } else {
         toast.error(response.data.message);
@@ -176,7 +171,7 @@ function ShowProductComponent() {
             <TableHead>
               <TableRow>
                 <TableCell align="center" colSpan={5} style={{fontSize:20, fontWeight:"bold"}}>
-                  Product Details
+                  Accessories Details
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -196,7 +191,7 @@ function ShowProductComponent() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {product.map((row) => {
+              {accessories.map((row) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
@@ -239,7 +234,7 @@ function ShowProductComponent() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={totalProduct}
+          count={totalAccessories}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -263,46 +258,28 @@ function ShowProductComponent() {
               label="ID"
               type="text"
               fullWidth
-              value={currentProduct.id}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, id: e.target.value })}
+              value={currentAccessories.id}
+              onChange={(e) => setCurrentAccessories({ ...currentAccessories, id: e.target.value })}
               required
               disabled={true}
             />
             <TextField
               autoFocus
               margin="dense"
-              label="Product Name"
+              label="Accessory Name"
               type="text"
               fullWidth
-              value={currentProduct.product_name}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, product_name: e.target.value })}
+              value={currentAccessories.accessory_name}
+              onChange={(e) => setCurrentAccessories({ ...currentAccessories, accessory_name: e.target.value })}
               required
             />
             <TextField
               margin="dense"
-              label="Price"
+              label="productId"
               type="text"
               fullWidth
-              value={currentProduct.price}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
-              required
-            />
-            <TextField
-              margin="dense"
-              label="Description"
-              type="text"
-              fullWidth
-              value={currentProduct.description}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, description: e.target.value })}
-              required
-            />
-            <TextField
-              margin="dense"
-              label="userId"
-              type="text"
-              fullWidth
-              value={currentProduct.userId}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, userId: e.target.value })}
+              value={currentAccessories.productId}
+              onChange={(e) => setCurrentAccessories({ ...currentAccessories, productId: e.target.value })}
               required
             />
             <DialogActions>
@@ -321,5 +298,4 @@ function ShowProductComponent() {
     </>
   );
 }
-
-export default ShowProductComponent;
+export default ShowAccessoriesComponent;
