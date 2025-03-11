@@ -13,7 +13,7 @@ import { toast, ToastContainer } from "react-toastify";
 function LoginComponent() {
   const router = useRouter();
   const theme = useTheme();
-  console.log("custom theme:", theme.palette.primary.main);
+  //console.log("custom theme:", theme.palette.primary.main);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +40,8 @@ function LoginComponent() {
       if (response.data.success) {
         console.log("Login successful.");
         //localStorage.setItem("user", JSON.stringify(response.data.data));
-        setUser(response.data.data);  
+        setUser(response.data.data);
+        Cookies.set("user",JSON.stringify(response.data.data), { expires: 7, secure: true })  //set
         Cookies.set("token", response.data.token, { expires: 7, secure: true });
         toast.success(response.data.message)
         setTimeout(() => {
@@ -52,8 +53,7 @@ function LoginComponent() {
       }
     } catch (err) {
       setLoading(false);
-      console.error(err.response.data);
-      console.error(err.response.data.message);
+      toast.error(err.response.data)
       toast.error(err.response.data.message)
     } finally {
       setLoading(false);
@@ -149,7 +149,7 @@ const styles = {
     width: "100%",
     padding: "10px",
     fontSize: "1rem",
-    backgroundColor: "rgb(80, 189, 160)",
+    backgroundColor: "#3393FF",
     color: "white",
     border: "none",
     borderRadius: "4px",

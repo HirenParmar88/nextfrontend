@@ -7,12 +7,13 @@ import Cookies from "js-cookie";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
   console.log({ user });
   
   // Function to log out user
   const logout = () => {
     Cookies.remove("token");
+    Cookies.remove("user")
     //localStorage.removeItem("user");
     setUser(null);
   };

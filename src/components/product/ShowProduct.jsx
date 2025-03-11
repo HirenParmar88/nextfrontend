@@ -1,4 +1,4 @@
-//src/components/user/ShowUser.jsx
+//src/components/product/ShowProduct.jsx
 
 import React, { useEffect, useState } from "react";
 import {
@@ -24,30 +24,30 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
-import { Label } from "@mui/icons-material";
 
-function ShowUserComponent() {
-  const [users, setUsers] = useState([]);
+function ShowProductComponent() {
+  const [product, setProduct] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalProduct, setTotalProduct] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ id: "", name: "", email: "", role: "" });
+  const [currentProduct, setCurrentProduct] = useState({ id: "", product_name: "", price: "", description: "", userId: "" });
 
   const columns = [
     { id: "id", label: "ID", minWidth: 100 },
-    { id: "name", label: "Name", minWidth: 170 },
-    { id: "email", label: "Email", minWidth: 170 },
-    { id: "role", label: "Role", minWidth: 100 },
+    { id: "product_name", label: "Product Name", minWidth: 170 },
+    { id: "price", label: "Price", minWidth: 170 },
+    { id: "description", label: "Description", minWidth: 100 },
+    { id: "userId", label: "UserId", minWidth: 100 },
   ];
-  // Fetch users data from API
+  // Fetch products data from API
   useEffect(() => {
-    getUserLists();
+    getProductLists();
   }, []);
 
-  const getUserLists = async () => {
+  const getProductLists = async () => {
     try {
-      console.log("get user API call");
+      console.log("get product API call");
       const token = Cookies.get("token"); // Retrieve token from cookies
       if (!token) {
         console.error("No token found");
@@ -56,7 +56,7 @@ function ShowUserComponent() {
       //setPage(page+1)
       const response = await axios({
         method: "get",
-        url: `http://localhost:3000/user/?page=${
+        url: `http://localhost:3000/product/?page=${
           page + 1
         }&rowsPerPage=${rowsPerPage}`,
         headers: {
@@ -64,7 +64,7 @@ function ShowUserComponent() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("GET User API Response :-", response.data);
+      console.log("GET Product API Response :-", response.data);
       console.log("count", response.data.count);
       setPage(response.data.page); //1
       setRowsPerPage(response.data.rawsPerPage); //10
@@ -73,8 +73,8 @@ function ShowUserComponent() {
 
       if (response.data.code === 200) {
         toast.success(response.data.message);
-        setUsers(response.data.data);
-        setTotalUsers(response.data.count);
+        setProduct(response.data.data);
+        setTotalProduct(response.data.count);
       } else {
         toast.error(response.data.message);
       }
@@ -96,9 +96,9 @@ function ShowUserComponent() {
   };
 
   const handleDelete = async(id) => {
-    console.log("Deleting user with ID:", id);
+    console.log("Deleting product with ID:", id);
     try {
-      console.log("DELETE USER API CALLED..");
+      console.log("DELETE PRODUCT API CALLED..");
       const token = Cookies.get("token"); 
       console.log("Delete User token :",token);
       
@@ -108,7 +108,7 @@ function ShowUserComponent() {
       }
       const deleteRes = await axios({
         method:"delete",
-        url:`http://localhost:3000/user/${id}`,
+        url:`http://localhost:3000/product/${id}`,
         headers:{
           "Content-Type":"application/json",
           "Authorization":`Bearer ${token}`
@@ -116,7 +116,7 @@ function ShowUserComponent() {
       })
       console.log(deleteRes.data);
       if(deleteRes.data.code === 200){
-        setUsers(prevUsers => prevUsers.filter(user => user.id!==id))
+        setProduct(prevProduct => prevProduct.filter(product => product.id!==id))
         toast.success(deleteRes.data.message)
       }else{
         toast.warning(deleteRes.data.message)
@@ -127,15 +127,15 @@ function ShowUserComponent() {
     }
   };
 
-  const handleOpenDialog = (user) => {
-    setCurrentUser({ id: user.id, name: user.name, email: user.email, role: user.role });
+  const handleOpenDialog = (product) => {
+    setCurrentProduct({ id: product.id, product_name: product.product_name, description: product.description,price:product.price, userId: product.userId });
     setOpenDialog(true);
   };
 
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
-      console.log("UPDATE USER API CALL..");
+      console.log("UPDATE PRODUCT API CALL..");
       
       const token = Cookies.get("token");
       if (!token) {
@@ -144,20 +144,20 @@ function ShowUserComponent() {
       }
       const response = await axios({
         method: "put",
-        url: `http://localhost:3000/user/${currentUser.id}`,
+        url: `http://localhost:3000/product/${currentProduct.id}`,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         data: {
-          name: currentUser.name,
-          email: currentUser.email,
-          role: currentUser.role,
+          product_name: currentProduct.product_name,
+          price: currentProduct.price,
+          description: currentProduct.description,
         },
       });
       if (response.data.code === 200) {
         toast.success(response.data.message);
-        setUsers(prevUsers => prevUsers.map(user => user.id === currentUser.id ? { ...user, ...currentUser } : user));
+        setProduct(prevProduct => prevProduct.map(product => product.id === currentProduct.id ? { ...product, ...currentProduct } : product));
         setOpenDialog(false); // Close the dialog
       } else {
         toast.error(response.data.message);
@@ -176,7 +176,7 @@ function ShowUserComponent() {
             <TableHead>
               <TableRow>
                 <TableCell align="center" colSpan={5} style={{fontSize:20, fontWeight:"bold"}}>
-                  User Details
+                  Product Details
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -196,7 +196,7 @@ function ShowUserComponent() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((row) => {
+              {product.map((row) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                     {columns.map((column) => {
@@ -239,7 +239,7 @@ function ShowUserComponent() {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={totalUsers}
+          count={totalProduct}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -251,7 +251,7 @@ function ShowUserComponent() {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} PaperProps={{ sx: { borderRadius: "0.7rem", width:"25%"} }} sx={{
         backdropFilter: 'blur(4px) sepia(5%)',
       }}>
-        <DialogTitle style={{fontWeight:"bold"}}>Update User</DialogTitle>
+        <DialogTitle style={{fontWeight:"bold"}}>Update Product</DialogTitle>
         <DialogContent>
           <DialogContentText style={{marginBottom:"0.5rem"}}>
               Fill details and press update.
@@ -263,37 +263,46 @@ function ShowUserComponent() {
               label="ID"
               type="text"
               fullWidth
-              value={currentUser.id}
-              onChange={(e) => setCurrentUser({ ...currentUser, id: e.target.value })}
+              value={currentProduct.id}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, id: e.target.value })}
               required
               disabled={true}
             />
             <TextField
               autoFocus
               margin="dense"
-              label="Name"
+              label="Product Name"
               type="text"
               fullWidth
-              value={currentUser.name}
-              onChange={(e) => setCurrentUser({ ...currentUser, name: e.target.value })}
+              value={currentProduct.product_name}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, product_name: e.target.value })}
               required
             />
             <TextField
               margin="dense"
-              label="Email"
-              type="email"
+              label="Price"
+              type="text"
               fullWidth
-              value={currentUser.email}
-              onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
+              value={currentProduct.price}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, price: e.target.value })}
               required
             />
             <TextField
               margin="dense"
-              label="Role"
+              label="Description"
               type="text"
               fullWidth
-              value={currentUser.role}
-              onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.value })}
+              value={currentProduct.description}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, description: e.target.value })}
+              required
+            />
+            <TextField
+              margin="dense"
+              label="userId"
+              type="text"
+              fullWidth
+              value={currentProduct.userId}
+              onChange={(e) => setCurrentProduct({ ...currentProduct, userId: e.target.value })}
               required
             />
             <DialogActions>
@@ -313,4 +322,4 @@ function ShowUserComponent() {
   );
 }
 
-export default ShowUserComponent;
+export default ShowProductComponent;

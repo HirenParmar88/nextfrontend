@@ -1,32 +1,33 @@
-//src/components/user/adduser.js
+//src/components/product/addproduct.js
 "use client";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
-const addUserFunction = (name, password, email) => {
-  const addNewUser = async () => {
+const addProductFunction = (product_name, price, description, userId) => {
+  const addNewProduct = async () => {
     try {
       const token = Cookies.get("token"); // Retrieve token from cookies
       console.log("AAA");
       if (!token) {
-        console.error("No token found add user");
+        console.error("No token found add product");
         return;
       }
       const response = await axios({
-        url: "http://localhost:3000/user/create",
+        url: "http://localhost:3000/product/create",
         method: "post",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         data: {
-          name: name,
-          password: password,
-          email: email,
+          product_name: product_name,
+          price: price,
+          description: description,
+          userId:userId
         },
       });
-      console.log("create user API response:", response.data);
+      console.log("create product API response:", response.data);
       if (response.data.code === 200) {
         toast.success(response.data.message);
         return response.data.success;
@@ -41,7 +42,7 @@ const addUserFunction = (name, password, email) => {
     }
   };
 
-  return addNewUser;
+  return addNewProduct;
 };
 
-export default addUserFunction;
+export default addProductFunction;

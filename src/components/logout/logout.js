@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 const useLogout = () => {
-    const router = useRouter();
+  const router = useRouter();
   const { logout } = useUser();
 
   const handleLogout = async () => {
@@ -18,7 +18,6 @@ const useLogout = () => {
         toast.error("No token found");
         return;
       }
-
       const response = await axios.post(
         "http://localhost:3000/auth/logout",
         {}, // No body needed
@@ -28,16 +27,14 @@ const useLogout = () => {
           },
         }
       );
-
       console.log("Logout response:", response.data);
       if(response.data.code === 200){
-        router.push('/login')
         toast.success(response.data.message)
+        router.push('login')
       }
       // Remove token from cookies and reset user state
       Cookies.remove("token");
       logout(); // Call logout function from UserContext
-
     } catch (error) {
       console.error("Logout failed:", error.response?.data || error.message);
     }

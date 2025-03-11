@@ -15,8 +15,10 @@ import { ExitToApp } from "@mui/icons-material";
 import useLogout from "../logout/logout.js";
 import { useUser } from "@/context/UserContext";
 import  AddUserComponent  from "../user/AddUser.jsx";
-import { ToastContainer } from "react-toastify";
+import AddProductComponent from "../product/AddProduct.jsx"
 import ShowUserComponent from "../user/ShowUser.jsx";
+import ShowProductComponent from "../product/ShowProduct.jsx";
+import { ToastContainer } from "react-toastify";
 
 function NavigationBar() {
   const handleLogout = useLogout();
@@ -32,7 +34,7 @@ function NavigationBar() {
     // await ShowUserComponent();
   }, []);
 
-  const handleMenuItemClick = (action) => {
+  const handleMenuItemClickLogout = (action) => {
     console.log(action);
     handleLogout();
   };
@@ -45,6 +47,15 @@ function NavigationBar() {
     console.log(action);
     setActiveView("showUser")
   };
+
+  const handleAddProduct = (action) => {
+    console.log(action);
+    setActiveView("addProduct")
+  }
+  const handleShowProduct = (action) => {
+    console.log(action);
+    setActiveView("showProduct")
+  }
 
   const renderMenuItems = () => {
     if (user.role === "admin") {
@@ -60,59 +71,29 @@ function NavigationBar() {
               Show User
             </MenuItem>
           </Tooltip>
-          <Tooltip title="Update an existing user" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("updateUser")}>
-              Update User
-            </MenuItem>
-          </Tooltip>
-          <Tooltip title="Delete a user" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("deleteUser")}>
-              Delete User
-            </MenuItem>
-          </Tooltip>
         </>
       );
     } else if (user.role === "user") {
       return (
         <>
           <Tooltip title="Add a new product" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("addProduct")}>
+            <MenuItem onClick={() => handleAddProduct("addProduct")}>
               Add Product
             </MenuItem>
           </Tooltip>
           <Tooltip title="Add new accessories" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("addAccessories")}>
+            <MenuItem onClick={() => handleAddAccessories("addAccessories")}>
               Add Accessories
             </MenuItem>
           </Tooltip>
           <Tooltip title="Show all products" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("showProduct")}>
+            <MenuItem onClick={() => handleShowProduct("showProduct")}>
               Show Product
             </MenuItem>
           </Tooltip>
           <Tooltip title="Show all accessories" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("showAccessories")}>
+            <MenuItem onClick={() => handleShowAccessories("showAccessories")}>
               Show Accessories
-            </MenuItem>
-          </Tooltip>
-          <Tooltip title="Update an existing product" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("updateProduct")}>
-              Update Product
-            </MenuItem>
-          </Tooltip>
-          <Tooltip title="Update an existing accessory" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("updateAccessories")}>
-              Update Accessories
-            </MenuItem>
-          </Tooltip>
-          <Tooltip title="Delete a product" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("deleteProduct")}>
-              Delete Product
-            </MenuItem>
-          </Tooltip>
-          <Tooltip title="Delete an accessory" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("deleteAccessories")}>
-              Delete Accessories
             </MenuItem>
           </Tooltip>
         </>
@@ -122,11 +103,11 @@ function NavigationBar() {
 
   return (
     <>
-      <AppBar position="sticky" color="primary">
+      <AppBar position="relative" color="primary">
         <Toolbar
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            //justifyContent: "space-evenly",
             width: "100%",
           }}
         >
@@ -146,7 +127,7 @@ function NavigationBar() {
 
           {/* Common Logout option */}
           <Tooltip title="Logout" arrow>
-            <MenuItem onClick={() => handleMenuItemClick("logout")}>
+            <MenuItem onClick={() => handleMenuItemClickLogout("logout")}>
               <ExitToApp sx={{ marginRight: 1, alignItems: "flex-end" }} />
               Logout
             </MenuItem>
@@ -156,8 +137,12 @@ function NavigationBar() {
       {/* step-3 */}
       {activeView === "addUser" && <AddUserComponent />}
       {activeView === "showUser" && <ShowUserComponent />}
+
+      {activeView === "addProduct" && <AddProductComponent />}
+      {activeView === "showProduct" && <ShowProductComponent />}
       <ToastContainer />
     </>
   );
 }
+
 export default NavigationBar;

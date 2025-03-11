@@ -1,31 +1,32 @@
-//src/components/user/AddUser.jsx
+//src/components/product/AddProduct.jsx
 "use client";
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, useTheme } from "@mui/material";
-import addUserFunction from "./adduser.js";
+import addProductFunction from "./addproduct.js";
 import { ToastContainer } from "react-toastify";
 
-function AddUserComponent() {
+function AddProductComponent() {
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [product_name, setProductName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [userId, setUserId] = useState("")
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("User Details:", { name, password, email });
-    const addUser = addUserFunction(name, password, email);
+    console.log("Product Details:", { product_name, price, description, userId });
+    const addProduct = addProductFunction(product_name, price, description, userId);
     
     try {
-      const success = await addUser();
+      const success = await addProduct();
       
       if (success) {
         
-        setName("");
-        setPassword("");
-        setEmail("");
+        setProductName("");
+        setPrice("");
+        setDescription("");
+        setUserId("");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -49,34 +50,40 @@ function AddUserComponent() {
         }}
       >
         <Typography variant="h5" align="center" gutterBottom>
-          Add User
+          Add Product
         </Typography>
 
         <form onSubmit={handleSubmit}>
           <TextField
-            label="name"
+            label="Product Name"
             variant="outlined"
             fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={product_name}
+            onChange={(e) => setProductName(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
           <TextField
-            label="Password"
-            type="password"
+            label="Price"
             variant="outlined"
             fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
           <TextField
-            label="Email"
-            type="email"
+            label="description"
             variant="outlined"
             fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            sx={{ marginBottom: 2 }}
+          />
+          <TextField
+            label="userId"
+            variant="outlined"
+            fullWidth
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
           <Button
@@ -90,7 +97,7 @@ function AddUserComponent() {
               },
             }}
           >
-            {loading ? "Adding User..." : "Add User"}
+            {loading ? "Adding Product..." : "Add Product"}
           </Button>
         </form>
         <ToastContainer />
@@ -99,4 +106,4 @@ function AddUserComponent() {
   );
 }
 
-export default AddUserComponent;
+export default AddProductComponent;
